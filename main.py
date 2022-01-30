@@ -11,7 +11,7 @@ def getFixed(lst:list, k:float=1.0) -> list:
         r_lst.append([int(vl*k) for vl in val])
     return r_lst
 
-data = [("photos/biden.jpg","Biden"), ("photos/obama.jpg","Obama"), ("photos/uzim.jpg","Elyor")]
+data = [("photos/biden.jpg","Biden"), ("photos/obama.jpg","Obama")]
 oby = FaceRecog(data)
 vdo = VideoCapture(0)
 
