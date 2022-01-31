@@ -34,16 +34,16 @@ def getCenter(cord: tuple) -> tuple[int,int]:
     return (x, y)
 
 class FaceRecog(object):
-    def __init__(self, file_name:list=None, faceEncod_name:list=None) -> None:
+    def __init__(self, imgFiles_names:list=None, faceEncods_names:list=None) -> None:
         super(FaceRecog, self).__init__()
         self.__f_encs, self.__f_nmes = list(), list()
-        if file_name is not None:
-            for f, n in file_name:
+        if imgFiles_names is not None:
+            for f, n in imgFiles_names:
                 prsn = sozlash(load_image_file(f), auto=True)
                 self.__f_encs.append(face_encodings(prsn)[0])
                 self.__f_nmes.append(n)
         else:
-            for fe, n in faceEncod_name:
+            for fe, n in faceEncods_names:
                 self.__f_encs.append(fe)
                 self.__f_nmes.append(n)
         self.__ln_f, self.__centrs = len(self.__f_encs), list()
@@ -67,12 +67,12 @@ class FaceRecog(object):
             self.__centrs.append(getCenter(loc))
         return rtrn
     
-    def reset(self, file_name:list=None, faceEncod_name:list=None) -> None:
-        self.__init__(file_name, faceEncod_name)
+    def reset(self, imgFiles_names:list=None, faceEncods_names:list=None) -> None:
+        self.__init__(imgFiles_names, faceEncods_names)
     
-    def appendFace(self, file_name:tuple=None, faceEncod_name:tuple=None) -> None:
-        if file_name is not None:
-            f, n = file_name
+    def appendFace(self, imgFile_name:tuple[str,str]=None, faceEncod_name:tuple[ndarray,str]=None) -> None:
+        if imgFile_name is not None:
+            f, n = imgFile_name
             prsn = sozlash(load_image_file(f), auto=True)
             self.__f_encs.append(face_encodings(prsn)[0])
             self.__f_nmes.append(n)
