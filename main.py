@@ -14,12 +14,13 @@ def getFixed(lst:list, k:float=1.0) -> list:
 data = [("photos/biden.jpg","Biden"), ("photos/obama.jpg","Obama")]
 oby = FaceRecog(data)
 vdo = VideoCapture(0)
+waitKey(1000)
 
-oby2, mlmt = YigibTekshir(), list()
+mlmt: list[tuple[tuple,str]]
 pp: list[tuple[int,Timer]]
+oby2, mlmt = YigibTekshir(), list()
 pp, inds = list(), list()
 prevTime = 0
-waitKey(1000)
 
 while True:
     bgr_img, n = vdo.read()[1], 3
