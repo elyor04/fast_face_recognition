@@ -1,6 +1,8 @@
 # ushbu dastur odamlar yuzini tanib ismini aytadi
 ishlatish uchun qo'shimcha kutubxonalar o'rnatish kerak
+
 --------------------
+
 o'rnatish qiyinroq bo'lgan kutubxona - `face-recognition`
 
 avvalo kompyuterga
