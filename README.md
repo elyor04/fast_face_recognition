@@ -8,5 +8,7 @@ avvalo kompyuterga
 ni o'rnatish kerak
 
 keyin cmd ga
-```pip install cmake dlib face-recognition```
+```python
+pip install cmake dlib face-recognition
+```
 komandasini berish kerak
