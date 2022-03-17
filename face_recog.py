@@ -1,20 +1,36 @@
 from face_recognition import (
-    load_image_file, face_locations, face_encodings, face_distance)
-from cv2 import (
-    resize, INTER_AREA, INTER_LINEAR, INTER_CUBIC)
+    load_image_file,
+    face_locations,
+    face_encodings,
+    face_distance,
+)
+from cv2 import resize, INTER_AREA, INTER_LINEAR, INTER_CUBIC
 from numpy import argmin, ndarray
 from math import sqrt
 
-def sozQiymat(img:ndarray=None, eni:int=None, buyi:int=None, yuza:int=100000) -> tuple[int,int]:
+
+def sozQiymat(
+    img: ndarray = None, eni: int = None, buyi: int = None, yuza: int = 100000
+) -> tuple[int, int]:
     if (eni is None) or (buyi is None):
         buyi, eni = img.shape[:2]
     k = round(sqrt(yuza / (eni * buyi)), 4)
     x, y = int(eni * k), int(buyi * k)
     return (x, y)
 
-def sozlash(img:ndarray, eni:int=None, buyi:int=None, sifat:bool=False, auto:bool=False, yuza:int=100000) -> ndarray:
-    if auto: x, y = sozQiymat(img, yuza=yuza)
-    else: x, y = eni, buyi
+
+def sozlash(
+    img: ndarray,
+    eni: int = None,
+    buyi: int = None,
+    sifat: bool = False,
+    auto: bool = False,
+    yuza: int = 100000,
+) -> ndarray:
+    if auto:
+        x, y = sozQiymat(img, yuza=yuza)
+    else:
+        x, y = eni, buyi
     buyi, eni = img.shape[:2]
 
     if x <= eni and y <= buyi:
@@ -27,14 +43,18 @@ def sozlash(img:ndarray, eni:int=None, buyi:int=None, sifat:bool=False, auto:boo
     else:
         return resize(img, (x, y))
 
-def getCenter(cord: tuple) -> tuple[int,int]:
+
+def getCenter(cord: tuple) -> tuple[int, int]:
     y, x2, y2, x = cord
     x = int((x + x2) / 2)
     y = int((y + y2) / 2)
     return (x, y)
 
+
 class FaceRecog(object):
-    def __init__(self, imgFiles_names:list=None, faceEncods_names:list=None) -> None:
+    def __init__(
+        self, imgFiles_names: list = None, faceEncods_names: list = None
+    ) -> None:
         super(FaceRecog, self).__init__()
         self.__f_encs, self.__f_nmes = list(), list()
         if imgFiles_names is not None:
@@ -48,29 +68,35 @@ class FaceRecog(object):
                 self.__f_nmes.append(n)
         self.__ln_f, self.__centrs = len(self.__f_encs), list()
         self.__locs, self.__names = list(), list()
-    
-    def __sortLocs(self, locs:list) -> list:
+
+    def __sortLocs(self, locs: list) -> list:
         rtrn, locs = list(), locs.copy()
         pp = list()
-        for ind, (x,y) in enumerate(self.__centrs):
+        for ind, (x, y) in enumerate(self.__centrs):
             for ind2, loc in enumerate(locs):
                 x2, y2 = getCenter(loc)
-                if (abs(x-x2) < 20) and (abs(y-y2) < 20):
+                if (abs(x - x2) < 20) and (abs(y - y2) < 20):
                     rtrn.append(loc)
                     locs.pop(ind2)
                     self.__centrs[ind] = (x2, y2)
                     break
-            else: pp.insert(0, ind)
-        for i in pp: self.__centrs.pop(i)
+            else:
+                pp.insert(0, ind)
+        for i in pp:
+            self.__centrs.pop(i)
         for loc in locs:
             rtrn.append(loc)
             self.__centrs.append(getCenter(loc))
         return rtrn
-    
-    def reset(self, imgFiles_names:list=None, faceEncods_names:list=None) -> None:
+
+    def reset(self, imgFiles_names: list = None, faceEncods_names: list = None) -> None:
         self.__init__(imgFiles_names, faceEncods_names)
-    
-    def appendFace(self, imgFile_name:tuple[str,str]=None, faceEncod_name:tuple[ndarray,str]=None) -> None:
+
+    def appendFace(
+        self,
+        imgFile_name: tuple[str, str] = None,
+        faceEncod_name: tuple[ndarray, str] = None,
+    ) -> None:
         if imgFile_name is not None:
             f, n = imgFile_name
             prsn = sozlash(load_image_file(f), auto=True)
@@ -81,15 +107,15 @@ class FaceRecog(object):
             self.__f_encs.append(fe)
             self.__f_nmes.append(n)
         self.__ln_f += 1
-    
-    def removeFace(self, name:str=None, index:int=None) -> None:
+
+    def removeFace(self, name: str = None, index: int = None) -> None:
         if (name is not None) and (name in self.__f_nmes):
             index = self.__f_nmes.index(name)
         self.__f_encs.pop(index)
         self.__f_nmes.pop(index)
         self.__ln_f -= 1
 
-    def start(self, rgb_img:ndarray, infos:list=[]) -> None:
+    def start(self, rgb_img: ndarray, infos: list = []) -> None:
         self.__names.clear()
         self.__locs = self.__sortLocs(face_locations(rgb_img))
 
@@ -101,12 +127,14 @@ class FaceRecog(object):
                     x, y = getCenter(loc)
                     for ind2, info in enumerate(infos):
                         (x2, y2), nm = getCenter(info[0]), info[1]
-                        if (abs(x-x2) < 20) and (abs(y-y2) < 20):
+                        if (abs(x - x2) < 20) and (abs(y - y2) < 20):
                             ind_nme.append((ind, nm))
                             infos.pop(ind2)
                             break
-                    else: lcs.append(loc)
-            else: lcs = self.__locs
+                    else:
+                        lcs.append(loc)
+            else:
+                lcs = self.__locs
 
             encs = face_encodings(rgb_img, lcs)
             for enc in encs:
@@ -114,7 +142,8 @@ class FaceRecog(object):
                 ind = argmin(dis)
                 if dis[ind] <= 0.4:
                     self.__names.append(self.__f_nmes[ind])
-                else: self.__names.append("notanish")
+                else:
+                    self.__names.append("notanish")
             if inf_ln != 0:
                 for i, j in ind_nme:
                     self.__names.insert(i, j)
@@ -123,25 +152,27 @@ class FaceRecog(object):
 
     def getNames(self) -> list:
         return self.__names
+
     def getLocations(self) -> list:
         return self.__locs
+
 
 class YigibTekshir(object):
     def __init__(self) -> None:
         super(YigibTekshir, self).__init__()
         self.__ismlar: list[list]
         self.__ismlar = list()
-    
-    def start(self, texts:list) -> list:
+
+    def start(self, texts: list) -> list:
         rtrn = list()
         if len(texts) == 0:
             self.__ismlar.clear()
-        for i in range(len(texts)-len(self.__ismlar)):
+        for i in range(len(texts) - len(self.__ismlar)):
             self.__ismlar.append([])
-        
+
         for i in range(len(texts)):
             self.__ismlar[i].append(texts[i])
-            ism_ln, aniq = len(self.__ismlar[i]), '?'
+            ism_ln, aniq = len(self.__ismlar[i]), "?"
             if ism_ln >= 4:
                 for j in self.__ismlar[i]:
                     foiz = (self.__ismlar[i].count(j) / ism_ln) * 100
