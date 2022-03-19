@@ -4,7 +4,12 @@ from face_recognition import (
     face_encodings,
     face_distance,
 )
-from cv2 import resize, INTER_AREA, INTER_LINEAR, INTER_CUBIC
+from cv2 import (
+    resize,
+    INTER_AREA,
+    INTER_LINEAR,
+    INTER_CUBIC,
+)
 from numpy import argmin, ndarray
 from math import sqrt
 
